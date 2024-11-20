@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Collection;
 class MessageService
 {
 
-
     public function find(MessageFiltersDTO $filters): Collection|array
     {
         $query = Message::query();
@@ -36,39 +35,45 @@ class MessageService
 
         return $query->get();
     }
-    public function store(MessageDTO $data)
+
+    public function store(MessageDTO $data): Message
     {
+        /** @var Message $message */
         $message = Message::create([
             'user_id' => $data->user_id,
             'message' => $data->message
         ]);
 
-        if (!empty($data->tags)) {
-            $tags = Tag::query()->whereIn('name', $data->tags)->get();
-            $message->tags()->sync($tags);
-        }
+        $this->updateTags($message, $data->tags);
 
         return $message;
     }
 
-    public function update(int $id, MessageDTO $data): ?Message
+    public function update(int $id, MessageDTO $data): Message
     {
+        /** @var Message $message */
         $message = Message::findOrFail($id);
 
         $message->update([
             'message' => $data->message
         ]);
 
-        if (isset($data->tags)) {
-            $tags = Tag::whereIn('name', $data->tags)->get();
-            $message->tags()->sync($tags);
-        }
+        $this->updateTags($message, $data->tags);
 
         return $message;
     }
 
-    public function delete($id)
+    protected function updateTags(Message $message, array $tag_names): void
     {
+        if (!empty($tag_names)) {
+            $tags = Tag::whereIn('name', $tag_names)->get();
+            $message->tags()->sync($tags);
+        }
+    }
+
+    public function delete($id): ?bool
+    {
+        /** @var Message $message */
         $message = Message::findOrFail($id);
 
         return $message->delete();

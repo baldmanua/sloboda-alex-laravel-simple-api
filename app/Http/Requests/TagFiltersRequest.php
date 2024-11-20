@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreMessageRequest extends FormRequest
+class TagFiltersRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,9 +17,7 @@ class StoreMessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'message' => 'required|string|max:240',
-            'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,name',
+            'name' => 'nullable|string|min:3',
         ];
     }
 }

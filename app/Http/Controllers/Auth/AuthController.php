@@ -2,36 +2,32 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\DTOs\UserDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
-use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
+    public function __construct(
+        protected UserService $userService
+    ) {}
+
     public function register(RegisterRequest $request): JsonResponse
     {
-
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-        ]);
+        $dto = new UserDTO(
+            name: $request->input('name'),
+            email: $request->input('email'),
+            hashed_password: $request->input('password'),
+        );
+        $user = $this->userService->store($dto);
 
         return response()->json([
-            'message' => 'User registered successfully',
+            'message' => __('User registered successfully'),
             'user' => UserResource::make($user),
         ], 201);
     }
@@ -44,13 +40,13 @@ class AuthController extends Controller
             $token = $user->createToken(config('app.name'))->plainTextToken;
 
             return response()->json([
-                'message' => 'Login successful',
+                'message' => __('Login successful'),
                 'token' => $token,
             ]);
         }
 
         return response()->json([
-            'message' => 'Unauthorized',
+            'message' => __('Unauthorized'),
         ], 401);
     }
 }

@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\DTOs\TagFiltersDTO;
+use App\Helpers\EloquentHelper;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class TagService
 {
@@ -13,8 +15,8 @@ class TagService
     {
         $query = Tag::query();
 
-        if (!empty($filters->tags)) {
-            $query->whereIn('name', $filters->tags);
+        if (!empty($filters->name)) {
+            EloquentHelper::addSearchRule($query, 'name', $filters->name);
         }
 
         return $query->get();

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\TagFiltersDTO;
+use App\Http\Requests\TagFiltersRequest;
 use App\Http\Resources\TagResource;
 use App\Services\TagService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class TagController extends Controller
 {
@@ -15,10 +15,10 @@ class TagController extends Controller
         protected TagService $tagService
     ) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(TagFiltersRequest $request): JsonResponse
     {
         $filters = new TagFiltersDTO(
-            tags: $request->input('tags'),
+            name: $request->input('name'),
         );
 
         $tags = $this->tagService->find($filters);

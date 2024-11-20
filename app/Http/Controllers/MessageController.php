@@ -3,26 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\MessageFiltersDTO;
-use App\Http\Requests\StoreMessageRequest;
+use App\Http\Requests\MessageFiltersRequest;
+use App\Http\Requests\MessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
 use App\Services\MessageService;
 use App\DTOs\MessageDTO;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class MessageController extends Controller
 {
 
     public function __construct(
         protected MessageService $messageService
-    ) {}
+    ) {
+        $this->authorizeResource(Message::class, 'message');
+    }
 
-    public function index(Request $request): JsonResponse
+    public function index(MessageFiltersRequest $request): JsonResponse
     {
-        $this->authorize('viewAny', Message::class);
-
         $filters = new MessageFiltersDTO(
             tags: $request->input('tags'),
             user_ids: $request->input('user_ids'),
@@ -40,18 +41,14 @@ class MessageController extends Controller
      */
     public function show(Message $message): JsonResponse
     {
-        $this->authorize('view', $message);
-
         return response()->json(MessageResource::make($message));
     }
 
     /**
      * @throws AuthorizationException
      */
-    public function store(StoreMessageRequest $request): JsonResponse
+    public function store(MessageRequest $request): JsonResponse
     {
-        $this->authorize('create', Message::class);
-
         $dto = new MessageDTO(
             user_id: $request->user()->id,
             message: $request->input('message'),
@@ -65,11 +62,13 @@ class MessageController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function update(StoreMessageRequest $request, Message $message): JsonResponse
+    public function update(MessageRequest $request, Message $message): JsonResponse
     {
-        $this->authorize('update', $message);
-
-        $dto = new MessageDTO($request->user()->id, $request->input('message'), $request->input('tags'));
+        $dto = new MessageDTO(
+            user_id: $request->user()->id,
+            message: $request->input('message'),
+            tags: $request->input('tags')
+        );
         $message = $this->messageService->update($message->id, $dto);
 
         return response()->json(MessageResource::make($message));
@@ -78,14 +77,10 @@ class MessageController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function destroy(Message $message): JsonResponse
+    public function destroy(Message $message): Response
     {
-        $this->authorize('delete', $message);
-
         $this->messageService->delete($message->id);
 
-        return response()->json([
-
-        ]);
+        return response()->noContent();
     }
 }

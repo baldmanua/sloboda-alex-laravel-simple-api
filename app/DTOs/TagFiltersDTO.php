@@ -6,6 +6,6 @@ class TagFiltersDTO
 {
 
     public function __construct(
-        public ?array $tags
+        public readonly ?string $name
     ) {}
 }

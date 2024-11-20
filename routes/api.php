@@ -3,7 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\TagController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,7 +25,5 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('messages', MessageController::class);
     Route::get('tags', [TagController::class, 'index']);
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('users', [UserController::class, 'index']);
 });
