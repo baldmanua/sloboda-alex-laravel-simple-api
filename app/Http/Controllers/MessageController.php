@@ -44,9 +44,6 @@ class MessageController extends Controller
         return response()->json(MessageResource::make($message));
     }
 
-    /**
-     * @throws AuthorizationException
-     */
     public function store(MessageRequest $request): JsonResponse
     {
         $dto = new MessageDTO(
@@ -56,12 +53,9 @@ class MessageController extends Controller
         );
         $message = $this->messageService->store($dto);
 
-        return response()->json(MessageResource::make($message));
+        return response()->json(MessageResource::make($message), 201);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
     public function update(MessageRequest $request, Message $message): JsonResponse
     {
         $dto = new MessageDTO(
@@ -74,9 +68,6 @@ class MessageController extends Controller
         return response()->json(MessageResource::make($message));
     }
 
-    /**
-     * @throws AuthorizationException
-     */
     public function destroy(Message $message): Response
     {
         $this->messageService->delete($message->id);

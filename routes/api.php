@@ -24,6 +24,6 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('messages', MessageController::class);
-    Route::get('tags', [TagController::class, 'index']);
-    Route::get('users', [UserController::class, 'index']);
+    Route::get('tags', [TagController::class, 'index'])->name('tags.index');
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
 });

@@ -63,9 +63,9 @@ class MessageService
         return $message;
     }
 
-    protected function updateTags(Message $message, array $tag_names): void
+    protected function updateTags(Message $message, ?array $tag_names): void
     {
-        if (!empty($tag_names)) {
+        if (!is_null($tag_names)) {
             $tags = Tag::whereIn('name', $tag_names)->get();
             $message->tags()->sync($tags);
         }
