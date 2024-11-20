@@ -25,11 +25,4 @@ class RegisterRequest extends FormRequest
             'password' => ['required', 'confirmed', Password::defaults()],
         ];
     }
-
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'password' => Hash::make($this->input('password')),
-        ]);
-    }
 }
